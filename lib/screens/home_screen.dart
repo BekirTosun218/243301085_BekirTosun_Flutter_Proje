@@ -3,6 +3,7 @@ import '../models/talep.dart';
 import '../services/auth_service.dart';
 import '../services/talep_service.dart';
 import 'yeni_talep_screen.dart';
+import 'talep_detay_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -14,7 +15,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   bool _loading = true;
   List<Talep> _talepler = [];
-  String _filter = 'tumu'; // 'tumu' veya 'benim'
+  String _filter = 'tumu';
 
   @override
   void initState() {
@@ -44,8 +45,8 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  Color _aciliyetRengi(String aciliyet) {
-    switch (aciliyet) {
+  Color _aciliyetRengi(String a) {
+    switch (a) {
       case 'kritik':
         return Colors.red;
       case 'acil':
@@ -55,8 +56,8 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  Color _durumRengi(String durum) {
-    switch (durum) {
+  Color _durumRengi(String d) {
+    switch (d) {
       case 'gorevlendirildi':
         return Colors.blue;
       case 'tamamlandi':
@@ -68,8 +69,8 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  String _durumMetni(String durum) {
-    switch (durum) {
+  String _durumMetni(String d) {
+    switch (d) {
       case 'beklemede':
         return 'Beklemede';
       case 'gorevlendirildi':
@@ -79,7 +80,7 @@ class _HomeScreenState extends State<HomeScreen> {
       case 'iptal':
         return 'İptal';
       default:
-        return durum;
+        return d;
     }
   }
 
@@ -181,12 +182,16 @@ class _HomeScreenState extends State<HomeScreen> {
                                     ),
                                   ],
                                 ),
-                                onTap: () {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                        content: Text(
-                                            'Detay ekranı yakında eklenecek')),
+                                trailing: const Icon(Icons.chevron_right),
+                                onTap: () async {
+                                  await Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) =>
+                                          TalepDetayScreen(talep: t),
+                                    ),
                                   );
+                                  _loadTalepler();
                                 },
                               ),
                             );

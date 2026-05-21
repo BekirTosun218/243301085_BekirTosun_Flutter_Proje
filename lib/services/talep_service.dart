@@ -57,4 +57,42 @@ class TalepService {
       return 'Talep oluşturulamadı: $e';
     }
   }
+
+  static Future<String?> updateDurum({
+    required String talepId,
+    required String yeniDurum,
+  }) async {
+    try {
+      final userId = supabase.auth.currentUser?.id;
+
+      final updates = <String, dynamic>{
+        'durum': yeniDurum,
+        'updated_at': DateTime.now().toIso8601String(),
+      };
+
+      if (yeniDurum == 'gorevlendirildi') {
+        updates['atanan_id'] = userId;
+      }
+
+      await supabase.from('talepler').update(updates).eq('id', talepId);
+
+      await LogService.log('talep_durum_degisti',
+          detay: '$talepId -> $yeniDurum');
+      return null;
+    } catch (e) {
+      return 'Durum güncellenemedi: $e';
+    }
+  }
+
+  static Future<Talep?> getById(String id) async {
+    try {
+      final response =
+          await supabase.from('talepler').select().eq('id', id).maybeSingle();
+
+      if (response == null) return null;
+      return Talep.fromMap(response);
+    } catch (e) {
+      return null;
+    }
+  }
 }
