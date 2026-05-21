@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import '../main.dart';
 import '../models/talep.dart';
 import '../services/auth_service.dart';
 import '../services/talep_service.dart';
+import 'yeni_talep_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -14,7 +14,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   bool _loading = true;
   List<Talep> _talepler = [];
-  String _filter = 'tumu';
+  String _filter = 'tumu'; // 'tumu' veya 'benim'
 
   @override
   void initState() {
@@ -108,7 +108,8 @@ class _HomeScreenState extends State<HomeScreen> {
             child: SegmentedButton<String>(
               segments: const [
                 ButtonSegment(value: 'tumu', label: Text('Tüm Talepler')),
-                ButtonSegment(value: 'benim', label: Text('Benim Taleplerim')),
+                ButtonSegment(
+                    value: 'benim', label: Text('Benim Taleplerim')),
               ],
               selected: {_filter},
               onSelectionChanged: (val) {
@@ -151,7 +152,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                   horizontal: 12, vertical: 6),
                               child: ListTile(
                                 leading: CircleAvatar(
-                                  backgroundColor: _aciliyetRengi(t.aciliyet),
+                                  backgroundColor:
+                                      _aciliyetRengi(t.aciliyet),
                                   child: const Icon(Icons.local_hospital,
                                       color: Colors.white),
                                 ),
@@ -182,8 +184,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                 onTap: () {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     const SnackBar(
-                                        content:
-                                            Text('Detay ekranı yarın eklenecek')),
+                                        content: Text(
+                                            'Detay ekranı yakında eklenecek')),
                                   );
                                 },
                               ),
@@ -195,10 +197,18 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Yeni talep ekleme yakında!')),
+        onPressed: () async {
+          final eklendi = await Navigator.push<bool>(
+            context,
+            MaterialPageRoute(builder: (_) => const YeniTalepScreen()),
           );
+          if (!mounted) return;
+          if (eklendi == true) {
+            _loadTalepler();
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Talep başarıyla oluşturuldu')),
+            );
+          }
         },
         icon: const Icon(Icons.add),
         label: const Text('Yeni Talep'),
