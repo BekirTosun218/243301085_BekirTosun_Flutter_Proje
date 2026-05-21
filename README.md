@@ -63,6 +63,9 @@ uygulamadır. İki farklı kullanıcı rolü bulunmaktadır:
 ![Profil](screenshots/talep_eden_profil.jpg)
 ![Profil](screenshots/gorevlendiren_profil.jpg)
 
+### Kayıt Ol
+![Kayıt](screenshots/kayit_ol.jpg)
+
 ### Log Ekranı
 ![Log](screenshots/log_ekran.jpg)
 
