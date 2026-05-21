@@ -1,32 +1,44 @@
 import '../main.dart';
 import '../models/talep.dart';
 import 'log_service.dart';
+import 'profile_service.dart';
 
 class TalepService {
   static Future<List<Talep>> getAll() async {
-    final response = await supabase
-        .from('talepler')
-        .select()
-        .order('created_at', ascending: false);
+    try {
+      final response = await supabase
+          .from('talepler')
+          .select()
+          .order('created_at', ascending: false);
 
-    return (response as List)
-        .map((row) => Talep.fromMap(row as Map<String, dynamic>))
-        .toList();
+      return (response as List)
+          .map((row) => Talep.fromMap(row as Map<String, dynamic>))
+          .toList();
+    } catch (e) {
+      return [];
+    }
   }
 
   static Future<List<Talep>> getMyTalepler() async {
     final userId = supabase.auth.currentUser?.id;
     if (userId == null) return [];
 
-    final response = await supabase
-        .from('talepler')
-        .select()
-        .eq('olusturan_id', userId)
-        .order('created_at', ascending: false);
+    try {
+      final profile = await ProfileService.getById(userId);
+      if (profile == null) return [];
 
-    return (response as List)
-        .map((row) => Talep.fromMap(row as Map<String, dynamic>))
-        .toList();
+      final response = await supabase
+          .from('talepler')
+          .select()
+          .eq(profile.isDispatcher ? 'atanan_id' : 'olusturan_id', userId)
+          .order('created_at', ascending: false);
+
+      return (response as List)
+          .map((row) => Talep.fromMap(row as Map<String, dynamic>))
+          .toList();
+    } catch (e) {
+      return [];
+    }
   }
 
   static Future<String?> create({

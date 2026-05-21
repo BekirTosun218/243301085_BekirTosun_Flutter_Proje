@@ -4,6 +4,7 @@ import '../services/auth_service.dart';
 import '../services/talep_service.dart';
 import 'yeni_talep_screen.dart';
 import 'talep_detay_screen.dart';
+import 'profil_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -95,9 +96,20 @@ class _HomeScreenState extends State<HomeScreen> {
             onPressed: _loadTalepler,
           ),
           IconButton(
+            icon: const Icon(Icons.account_circle),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const ProfilScreen()),
+              );
+            },
+          ),
+          IconButton(
             icon: const Icon(Icons.logout),
             onPressed: () async {
               await AuthService.signOut();
+              if (!mounted) return;
+              Navigator.of(context).popUntil((route) => route.isFirst);
             },
           ),
         ],
