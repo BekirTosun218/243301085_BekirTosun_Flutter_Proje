@@ -5,6 +5,7 @@ import '../services/talep_service.dart';
 import 'yeni_talep_screen.dart';
 import 'talep_detay_screen.dart';
 import 'profil_screen.dart';
+import 'log_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -85,12 +86,26 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  String _formatDate(DateTime dt) {
+    return '${dt.day.toString().padLeft(2, '0')}.${dt.month.toString().padLeft(2, '0')}.${dt.year}';
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Sağlık Nakil Talepleri'),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.history),
+            tooltip: 'İşlem Geçmişi',
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const LogScreen()),
+              );
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: _loadTalepler,
@@ -109,7 +124,8 @@ class _HomeScreenState extends State<HomeScreen> {
             onPressed: () async {
               await AuthService.signOut();
               if (!mounted) return;
-              Navigator.of(context).popUntil((route) => route.isFirst);
+              Navigator.of(context)
+                  .popUntil((route) => route.isFirst);
             },
           ),
         ],
@@ -139,7 +155,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.inbox, size: 80, color: Colors.grey),
+                            Icon(Icons.inbox,
+                                size: 80, color: Colors.grey),
                             SizedBox(height: 16),
                             Text(
                               'Henüz talep yok',
@@ -167,7 +184,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                 leading: CircleAvatar(
                                   backgroundColor:
                                       _aciliyetRengi(t.aciliyet),
-                                  child: const Icon(Icons.local_hospital,
+                                  child: const Icon(
+                                      Icons.local_hospital,
                                       color: Colors.white),
                                 ),
                                 title: Text(
@@ -182,10 +200,18 @@ class _HomeScreenState extends State<HomeScreen> {
                                     const SizedBox(height: 4),
                                     Text(
                                         '${t.kaynakKurum} → ${t.hedefKurum}'),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      _formatDate(t.createdAt),
+                                      style: const TextStyle(
+                                          fontSize: 11,
+                                          color: Colors.grey),
+                                    ),
                                     const SizedBox(height: 6),
                                     Row(
                                       children: [
-                                        _etiket(t.aciliyet.toUpperCase(),
+                                        _etiket(
+                                            t.aciliyet.toUpperCase(),
                                             _aciliyetRengi(t.aciliyet)),
                                         const SizedBox(width: 8),
                                         _etiket(_durumMetni(t.durum),
@@ -194,7 +220,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                     ),
                                   ],
                                 ),
-                                trailing: const Icon(Icons.chevron_right),
+                                trailing:
+                                    const Icon(Icons.chevron_right),
                                 onTap: () async {
                                   await Navigator.push(
                                     context,
@@ -223,7 +250,8 @@ class _HomeScreenState extends State<HomeScreen> {
           if (eklendi == true) {
             _loadTalepler();
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Talep başarıyla oluşturuldu')),
+              const SnackBar(
+                  content: Text('Talep başarıyla oluşturuldu')),
             );
           }
         },
